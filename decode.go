@@ -2,7 +2,7 @@ package bencode
 
 import (
 	"bufio"
-	"errors"
+	"fmt"
 	"io"
 	"strconv"
 )
@@ -64,7 +64,7 @@ func (decoder *Decoder) getList() ([]interface{}, error) {
 			}
 			item, err = decoder.getString()
 		default:
-			return nil, errors.New("becode string should begin with 'i','l','d','0~9'")
+			return nil, fmt.Errorf("becode string should begin with 'i','l','d','0~9'")
 		}
 		list = append(list, item)
 	}
@@ -72,7 +72,7 @@ func (decoder *Decoder) getList() ([]interface{}, error) {
 	if ch, err := decoder.ReadByte(); err != nil {
 		return nil, err
 	} else if ch != 'e' {
-		return nil, errors.New("becode list should end with 'e'")
+		return nil, fmt.Errorf("becode list should end with 'e'")
 	}
 
 	return list, nil
@@ -105,7 +105,7 @@ func (decoder *Decoder) getDictionary() (map[string]interface{}, error) {
 			}
 			item, err = decoder.getString()
 		default:
-			return nil, errors.New("becode string should begin with 'i','l','d','0~9'")
+			return nil, fmt.Errorf("becode string should begin with 'i','l','d','0~9'")
 		}
 
 		dict[key] = item
@@ -114,7 +114,7 @@ func (decoder *Decoder) getDictionary() (map[string]interface{}, error) {
 	if ch, err := decoder.ReadByte(); err != nil {
 		return nil, err
 	} else if ch != 'e' {
-		return nil, errors.New("becode dictionary should end with 'e'")
+		return nil, fmt.Errorf("becode dictionary should end with 'e'")
 	}
 
 	return dict, nil
@@ -125,7 +125,7 @@ func Unmarshal(reader io.Reader) (map[string]interface{}, error) {
 	if ch, err := decoder.ReadByte(); err != nil {
 		return nil, err
 	} else if ch != 'd' {
-		return nil, errors.New("bencode data must begin with dictionary")
+		return nil, fmt.Errorf("bencode data must begin with dictionary")
 	}
 	return decoder.getDictionary()
 }
