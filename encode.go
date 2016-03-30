@@ -84,6 +84,14 @@ func (encoder *Encoder) writeDictionary(dict map[string]interface{}) error {
 			encoder.writeInt(reflect.ValueOf(value).Int())
 		case uint, uint8, uint16, uint32, uint64:
 			encoder.writeUint(reflect.ValueOf(value).Uint())
+		case []map[string]interface{}:
+			encoder.WriteByte('l')
+			for _, v := range value {
+				if err := encoder.writeDictionary(v); err != nil {
+					return err
+				}
+			}
+			encoder.WriteByte('e')
 		default:
 			return fmt.Errorf("becode type error")
 		}
